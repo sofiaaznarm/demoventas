@@ -22,15 +22,15 @@ if 'Region' not in df.columns:
     st.stop()
 
 if 'Ventas' not in df.columns:
-    st.error("Error: La columna 'Ventas' no existe en el DataFrame.")
+    st.error("Error: La columna 'Sales' no existe en el DataFrame.")
     st.stop()
 
 
 # Agrupar las ventas por región
-ventas_por_region = df.groupby('Region')['Ventas'].sum()
+ventas_por_region = df.groupby('Region')['Sales'].sum()
 
 # Crear el gráfico de barras con Plotly Express
-fig = px.bar(ventas_por_region, x=ventas_por_region.index, y='Ventas',
+fig = px.bar(ventas_por_region, x=ventas_por_region.index, y='Sales',
              labels={'x': 'Región', 'y': 'Ventas Totales'},
              title='Ventas por Región')
 
