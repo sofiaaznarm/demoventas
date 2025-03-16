@@ -1,7 +1,7 @@
 # prompt: arma una grafica de las ventas por region del dataframe 
-
-import matplotlib.pyplot as plt
-
+import plotly.express as px
+import steramlit as st
+import pandas as pd
 # ... (your existing code)
 
 # Assuming 'Region' and 'Sales' are column names in your DataFrame
