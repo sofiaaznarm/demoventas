@@ -1,6 +1,6 @@
 # prompt: arma una grafica de las ventas por region del dataframe 
 import plotly.express as px
-import steramlit as st
+import streamlit as st
 import pandas as pd
 # ... (your existing code)
 
