@@ -2,7 +2,7 @@
 
 import pandas as pd
 import streamlit as st
-import matplotlib.pyplot as plt
+import plotlyexpress as px
 
 # Lee el archivo Excel
 try:
