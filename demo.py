@@ -6,30 +6,30 @@ import plotly.express as px
 
 # Lee el archivo Excel
 try:
-  df = pd.read_excel('SalidaFinalVentas.xlsx')
-  print(df.head()) # Muestra las primeras filas del DataFrame
+    df = pd.read_excel('SalidaFinalVentas.xlsx')
+    print(df.head()) # Muestra las primeras filas del DataFrame
 except FileNotFoundError:
-  print("Error: El archivo 'SalidaFinalVentas.xlsx' no fue encontrado.")
+    st.error("Error: El archivo 'SalidaFinalVentas.xlsx' no fue encontrado.")
+    st.stop() # Detener la ejecución si no se encuentra el archivo
 except Exception as e:
-  print(f"Ocurrió un error al leer el archivo: {e}")
+    st.error(f"Ocurrió un error al leer el archivo: {e}")
+    st.stop() # Detener la ejecución si ocurre un error
 
-# Verifica si el DataFrame se cargó correctamente
-if 'df' in locals() and isinstance(df, pd.DataFrame):
-    try:
-        # Agrupa las ventas por región y suma las cantidades
-        ventas_por_region = df.groupby('Region')['Sales'].sum()
 
-        # Crea la gráfica de barras
-        fig, ax = plt.subplots()
-        ventas_por_region.plot(kind='bar', ax=ax)
-        ax.set_xlabel('Región')
-        ax.set_ylabel('Ventas Totales')
-        ax.set_title('Ventas por Región')
+# Verifica si la columna 'Region' existe en el DataFrame
+if 'Region' not in df.columns:
+    st.error("Error: La columna 'Region' no se encuentra en el archivo.")
+    st.stop()
 
-        # Muestra la gráfica en Streamlit
-        st.pyplot(fig)
+if 'Ventas' not in df.columns:
+    st.error("Error: La columna 'Ventas' no se encuentra en el archivo. Asegúrate de que exista una columna llamada 'Ventas' en tu archivo Excel.")
+    st.stop()
 
-    except KeyError as e:
-        st.error(f"Error: La columna '{e}' no fue encontrada en el DataFrame.")
-    except Exception as e:
-        st.error(f"Ocurrió un error al generar la gráfica: {e}")
+# Crea la gráfica usando Plotly Express
+fig = px.bar(df, x='Region', y='Ventas', title='Ventas por Región')
+
+# Muestra la gráfica en Streamlit
+st.plotly_chart(fig)
+
+# Muestra el DataFrame en Streamlit (opcional)
+st.write(df)
