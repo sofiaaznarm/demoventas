@@ -1,41 +1,20 @@
-# prompt: arma una grafica de las ventas por region del dataframe df usando streamlit
+# prompt: arma una grafica de las ventas por region del dataframe 
 
-import pandas as pd
-import streamlit as st
-import plotly.express as px
+import matplotlib.pyplot as plt
 
-# Lee el archivo Excel
+# ... (your existing code)
+
+# Assuming 'Region' and 'Ventas' are column names in your DataFrame
 try:
-    df = pd.read_excel('SalidaFinalVentas.xlsx')
-    #print(df.head()) # Muestra las primeras filas del DataFrame
-except FileNotFoundError:
-    st.error("Error: El archivo 'SalidaFinalVentas.xlsx' no fue encontrado.")
-    st.stop() # Detener la ejecución si no se encuentra el archivo
+    ventas_por_region = df.groupby('Region')['Ventas'].sum()
+    plt.figure(figsize=(10, 6))
+    ventas_por_region.plot(kind='bar')
+    plt.title('Ventas por Región')
+    plt.xlabel('Región')
+    plt.ylabel('Ventas')
+    plt.xticks(rotation=45, ha='right')  # Rotate x-axis labels for readability
+    st.pyplot(plt)
+except KeyError:
+    st.error("Error: Las columnas 'Region' o 'Ventas' no fueron encontradas en el DataFrame.")
 except Exception as e:
-    st.error(f"Ocurrió un error al leer el archivo: {e}")
-    st.stop()
-
-
-# Verificar si la columna 'Region' existe
-if 'Region' not in df.columns:
-    st.error("Error: La columna 'Region' no existe en el DataFrame.")
-    st.stop()
-
-if 'Ventas' not in df.columns:
-    st.error("Error: La columna 'Ventas' no existe en el DataFrame.")
-    st.stop()
-
-
-# Agrupar las ventas por región
-ventas_por_region = df.groupby('Region')['Ventas'].sum()
-
-# Crear el gráfico de barras con Plotly Express
-fig = px.bar(ventas_por_region, x=ventas_por_region.index, y='Ventas',
-             labels={'x': 'Región', 'y': 'Ventas Totales'},
-             title='Ventas por Región')
-
-# Mostrar el gráfico en Streamlit
-st.plotly_chart(fig)
-
-# Mostrar el DataFrame (opcional)
-st.write(df)
+    st.error(f"Ocurrió un error al generar la gráfica: {e}")
