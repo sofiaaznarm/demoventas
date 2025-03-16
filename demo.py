@@ -1,29 +1,35 @@
-# prompt: arma una grafica de las ventas por region del dataframe 
+# prompt: arma una grafica de las ventas por region del dataframe df usando streamlit
 
 import pandas as pd
 import streamlit as st
-import plotlyexpress as px
+import plotly.express as px
 
 # Lee el archivo Excel
 try:
   df = pd.read_excel('SalidaFinalVentas.xlsx')
-  
-  # Agrupa las ventas por región y suma las ventas
-  ventas_por_region = df.groupby('Region')['Ventas'].sum()
-
-  # Crea la gráfica de barras
-  plt.figure(figsize=(10, 6))
-  plt.bar(ventas_por_region.index, ventas_por_region.values)
-  plt.xlabel('Región')
-  plt.ylabel('Ventas')
-  plt.title('Ventas por Región')
-  plt.xticks(rotation=45, ha='right')  # Rota las etiquetas del eje x para mejor legibilidad
-  st.pyplot(plt)
-
-
+  print(df.head()) # Muestra las primeras filas del DataFrame
 except FileNotFoundError:
-  st.error("Error: El archivo 'SalidaFinalVentas.xlsx' no fue encontrado.")
-except KeyError:
-    st.error("Error: La columna 'Region' o 'Ventas' no se encuentra en el archivo.")
+  print("Error: El archivo 'SalidaFinalVentas.xlsx' no fue encontrado.")
 except Exception as e:
-  st.error(f"Ocurrió un error al leer el archivo o generar la gráfica: {e}")
+  print(f"Ocurrió un error al leer el archivo: {e}")
+
+# Verifica si el DataFrame se cargó correctamente
+if 'df' in locals() and isinstance(df, pd.DataFrame):
+    try:
+        # Agrupa las ventas por región y suma las cantidades
+        ventas_por_region = df.groupby('Region')['Sales'].sum()
+
+        # Crea la gráfica de barras
+        fig, ax = plt.subplots()
+        ventas_por_region.plot(kind='bar', ax=ax)
+        ax.set_xlabel('Región')
+        ax.set_ylabel('Ventas Totales')
+        ax.set_title('Ventas por Región')
+
+        # Muestra la gráfica en Streamlit
+        st.pyplot(fig)
+
+    except KeyError as e:
+        st.error(f"Error: La columna '{e}' no fue encontrada en el DataFrame.")
+    except Exception as e:
+        st.error(f"Ocurrió un error al generar la gráfica: {e}")
