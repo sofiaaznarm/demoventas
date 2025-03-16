@@ -26,7 +26,7 @@ if 'Ventas' not in df.columns:
     st.stop()
 
 # Crea la gráfica usando Plotly Express
-fig = px.bar(df, x='Region', y='Ventas', title='Ventas por Región')
+fig = px.bar(df, x='Region', y='sales_column', title='Ventas por Región')
 
 # Muestra la gráfica en Streamlit
 st.plotly_chart(fig)
