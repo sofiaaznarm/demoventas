@@ -41,3 +41,22 @@ st.plotly_chart(fig)
 
 # Muestra el DataFrame en Streamlit (opcional)
 st.write(df)
+
+# Crea un filtro para la columna 'Region'
+regiones_unicas = df['Region'].unique()
+region_seleccionada = st.sidebar.multiselect("Selecciona Región:", regiones_unicas)
+
+# Filtrar el DataFrame basado en la selección del usuario
+if region_seleccionada:
+    df_filtrado = df[df['Region'].isin(region_seleccionada)]
+else:
+    df_filtrado = df
+
+# Crea la gráfica usando Plotly Express, utilizando la columna correcta para las ventas
+fig = px.bar(df_filtrado, x='Region', y=sales_column, title='Ventas por Región')
+
+# Muestra la gráfica en Streamlit
+st.plotly_chart(fig)
+
+# Muestra el DataFrame filtrado en Streamlit (opcional)
+st.write(df_filtrado)
