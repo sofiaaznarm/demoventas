@@ -4,6 +4,7 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 
+
 # Lee el archivo Excel
 try:
     df = pd.read_excel('SalidaFinalVentas.xlsx')
@@ -42,23 +43,41 @@ st.plotly_chart(fig)
 # Muestra el DataFrame en Streamlit (opcional)
 st.write(df)
 
-# Crea la gráfica usando Plotly Express, utilizando la columna correcta para las ventas
-fig = px.bar(df_filtrado, x='Region', y=sales_column, title='Ventas por Región')
 
-# Muestra la gráfica en Streamlit
-st.plotly_chart(fig)
 
-# Muestra el DataFrame filtrado en Streamlit (opcional)
-st.write(df_filtrado)
+# Lee el archivo Excel
+try:
+    df = pd.read_excel('SalidaFinalVentas.xlsx')
+except FileNotFoundError:
+    st.error("Error: El archivo 'SalidaFinalVentas.xlsx' no fue encontrado.")
+    st.stop()
+except Exception as e:
+    st.error(f"Ocurrió un error al leer el archivo: {e}")
+    st.stop()
 
 # Filtro para la columna 'Region'
-region_filter = st.selectbox('Selecciona una Región', df['Region'].unique())
+if 'Region' in df.columns:
+    region_filter = st.selectbox('Selecciona una Región', df['Region'].unique())
+else:
+    st.warning("La columna 'Region' no existe en el DataFrame. No se puede aplicar el filtro de región.")
+    region_filter = None 
 
 # Filtro para la columna 'State'
-state_filter = st.selectbox('Selecciona un Estado', df['State'].unique())
+if 'State' in df.columns:
+    state_filter = st.selectbox('Selecciona un Estado', df['State'].unique())
+else:
+    st.warning("La columna 'State' no existe en el DataFrame. No se puede aplicar el filtro de estado.")
+    state_filter = None 
 
 # Aplica los filtros
-filtered_df = df[(df['Region'] == region_filter) & (df['State'] == state_filter)]
+if region_filter is not None and state_filter is not None:
+    filtered_df = df[(df['Region'] == region_filter) & (df['State'] == state_filter)]
+elif region_filter is not None:
+    filtered_df = df[df['Region'] == region_filter]
+elif state_filter is not None:
+    filtered_df = df[df['State'] == state_filter]
+else:
+    filtered_df = df  # Si no hay filtros, muestra el DataFrame original
 
 # Muestra el resultado
 if not filtered_df.empty:
