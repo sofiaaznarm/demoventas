@@ -54,41 +54,40 @@ except FileNotFoundError:
 except Exception as e:
     st.error(f"Ocurrió un error al leer el archivo: {e}")
     st.stop()
-
+    
 # Filtro para la columna 'Region'
 if 'Region' in df.columns:
-    region_filter = st.selectbox('Selecciona una Región', df['Region'].unique())
+    selected_regions = st.multiselect('Selecciona Regiones', df['Region'].unique())
+    if selected_regions:
+        df_filtered_region = df[df['Region'].isin(selected_regions)]
+    else:
+        df_filtered_region = df
 else:
     st.warning("La columna 'Region' no existe en el DataFrame. No se puede aplicar el filtro de región.")
-    region_filter = None 
+    df_filtered_region = df
 
-# Filtro para la columna 'State'
-if 'State' in df.columns:
-    state_filter = st.selectbox('Selecciona un Estado', df['State'].unique())
+# Filtro para la columna 'State' usando el DataFrame filtrado por Region
+if 'State' in df_filtered_region.columns:
+    selected_states = st.multiselect('Selecciona Estados', df_filtered_region['State'].unique())
+    if selected_states:
+        df_filtered_state = df_filtered_region[df_filtered_region['State'].isin(selected_states)]
+    else:
+        df_filtered_state = df_filtered_region
 else:
     st.warning("La columna 'State' no existe en el DataFrame. No se puede aplicar el filtro de estado.")
-    state_filter = None 
-
-# Aplica los filtros
-if region_filter is not None and state_filter is not None:
-    filtered_df = df[(df['Region'] == region_filter) & (df['State'] == state_filter)]
-elif region_filter is not None:
-    filtered_df = df[df['Region'] == region_filter]
-elif state_filter is not None:
-    filtered_df = df[df['State'] == state_filter]
-else:
-    filtered_df = df  # Si no hay filtros, muestra el DataFrame original
-
-# Crea la gráfica de pastel
-if 'Category' in df.columns:
-  category_counts = df['Category'].value_counts()
-  fig_pie = px.pie(category_counts, values=category_counts.values, names=category_counts.index, title='Distribución de Categorías')
-  st.plotly_chart(fig_pie)
-else:
-  st.warning("La columna 'Category' no se encuentra en el DataFrame.")
+    df_filtered_state = df_filtered_region
 
 # Muestra el resultado
-if not filtered_df.empty:
-    st.write(filtered_df)
+if not df_filtered_state.empty:
+    st.write(df_filtered_state)
 else:
     st.write("No se encontraron resultados para los filtros seleccionados.")
+
+# Gráfica de pastel con la columna 'Category'
+if 'Category' in df.columns:
+    category_counts = df['Category'].value_counts()
+    fig_pie = px.pie(category_counts, values=category_counts.values, names=category_counts.index, title='Distribución de Categorías')
+    st.plotly_chart(fig_pie)
+else:
+    st.warning("La columna 'Category' no existe en el DataFrame. No se puede crear la gráfica de pastel.")
+
