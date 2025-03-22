@@ -79,6 +79,14 @@ elif state_filter is not None:
 else:
     filtered_df = df  # Si no hay filtros, muestra el DataFrame original
 
+# Crea la gráfica de pastel
+if 'Category' in df.columns:
+  category_counts = df['Category'].value_counts()
+  fig_pie = px.pie(category_counts, values=category_counts.values, names=category_counts.index, title='Distribución de Categorías')
+  st.plotly_chart(fig_pie)
+else:
+  st.warning("La columna 'Category' no se encuentra en el DataFrame.")
+
 # Muestra el resultado
 if not filtered_df.empty:
     st.write(filtered_df)
