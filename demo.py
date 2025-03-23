@@ -89,3 +89,6 @@ if not filtered_df.empty:
     st.write(filtered_df)
 else:
     st.write("No se encontraron resultados para los filtros seleccionados.")
+# prompt: imprimir los nombres de la columna del dataframe df 
+
+df.columns
