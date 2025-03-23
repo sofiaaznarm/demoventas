@@ -89,6 +89,27 @@ if not filtered_df.empty:
     st.write(filtered_df)
 else:
     st.write("No se encontraron resultados para los filtros seleccionados.")
+    
 # prompt: imprimir los nombres de la columna del dataframe df 
 
 df.columns
+
+# Asegúrate de que la columna 'Order Date' exista y sea de tipo fecha
+if 'Order Date' in df.columns:
+    try:
+        df['Order Date'] = pd.to_datetime(df['Order Date'])
+    except ValueError:
+        st.error("Error: La columna 'Order Date' no tiene un formato de fecha válido.")
+        st.stop()
+
+    # Agrupa por año y suma las ventas
+    df_sales_year = df.groupby(df['Order Date'].dt.year)['Sales'].sum().reset_index()
+
+    # Crea la gráfica de línea
+    fig_line = px.line(df_sales_year, x='Order Date', y='Sales', title='Acumulado de Ventas por Año')
+
+    # Muestra la gráfica en Streamlit
+    st.plotly_chart(fig_line)
+
+else:
+    st.error("Error: La columna 'Order Date' no se encuentra en el archivo.")
