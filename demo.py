@@ -113,20 +113,26 @@ if 'Order Date' in df.columns:
 
 else:
     st.error("Error: La columna 'Order Date' no se encuentra en el archivo.")
-# ... (código anterior)
 
-# Gráfica de barras con la columna 'Category'
-if 'Category' in filtered_df.columns:
-    st.subheader('Gráfica de Barras de Ventas por Categoría')
-    fig_bar = px.bar(filtered_df, x='Category', y='Sales', title='Ventas por Categoría')
-    st.plotly_chart(fig_bar)
-else:
-    st.warning("La columna 'Category' no existe en el DataFrame. No se puede generar la gráfica de barras.")
+# Asegúrate de que las columnas 'Order Date', 'Sales' y 'Category' existan
+if 'Order Date' not in df.columns or 'Sales' not in df.columns or 'Category' not in df.columns:
+    st.error("Error: Falta una o más de las columnas 'Order Date', 'Sales' o 'Category' en el archivo.")
+    st.stop()
 
-# Muestra el resultado
-if not filtered_df.empty:
-    st.write(filtered_df)
-else:
-    st.write("No se encontraron resultados para los filtros seleccionados.")
+try:
+    df['Order Date'] = pd.to_datetime(df['Order Date'])
+except ValueError:
+    st.error("Error: La columna 'Order Date' no tiene un formato de fecha válido.")
+    st.stop()
+
+# Agrupa por año y categoría, y suma las ventas
+df_sales_year_category = df.groupby([df['Order Date'].dt.year, 'Category'])['Sales'].sum().reset_index()
+
+# Crea la gráfica de barras
+fig_bar = px.bar(df_sales_year_category, x='Order Date', y='Sales', color='Category',
+                 title='Ventas Acumuladas por Año y Categoría')
+
+# Muestra la gráfica en Streamlit
+st.plotly_chart(fig_bar)
 
 
