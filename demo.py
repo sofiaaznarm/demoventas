@@ -186,24 +186,42 @@ fig_bar.update_layout(width=1200, height=600)
 # Muestra la gráfica en Streamlit
 st.plotly_chart(fig_bar)
 
+# Asegúrate de que las columnas 'Order Date', 'Sales', 'Category' y 'Sub-Category' existan
+if 'Order Date' not in df.columns or 'Sales' not in df.columns or 'Category' not in df.columns or 'Sub-Category' not in df.columns:
+    st.error("Error: Falta una o más de las columnas 'Order Date', 'Sales', 'Category' o 'Sub-Category' en el archivo.")
+    st.stop()
+
+try:
+    df['Order Date'] = pd.to_datetime(df['Order Date'])
+except ValueError:
+    st.error("Error: La columna 'Order Date' no tiene un formato de fecha válido.")
+    st.stop()
+
 # Agrupa por año, categoría y subcategoría, y suma las ventas
 df_sales_year_category_subcategory = df.groupby([df['Order Date'].dt.year, 'Category', 'Sub-Category'])['Sales'].sum().reset_index()
 
-# Ordena el DataFrame por año y categoría para que las subcategorías estén encimadas en la gráfica
-df_sales_year_category_subcategory = df_sales_year_category_subcategory.sort_values(['Order Date', 'Category'])
+# Crea un diccionario para almacenar los stacks por categoría y subcategoría
+stacks = {}
+for _, row in df_sales_year_category_subcategory.iterrows():
+    year, category, subcategory, sales = row['Order Date'], row['Category'], row['Sub-Category'], row['Sales']
+    if category not in stacks:
+        stacks[category] = {}
+    if subcategory not in stacks[category]:
+        stacks[category][subcategory] = {}
+    if year not in stacks[category][subcategory]:
+        stacks[category][subcategory][year] = sales
+    else:
+        stacks[category][subcategory][year] += sales
 
-
-# Crea la gráfica de barras
-fig_bar = px.bar(df_sales_year_category_subcategory, 
-                 x='Order Date', 
-                 y='Sales', 
-                 color='Sub-Category',
-                 barmode='group',  # Muestra las barras agrupadas por subcategoría
-                 facet_col='Category',  # Divide la gráfica por categoría en columnas
-                 title='Ventas Acumuladas por Año, Categoría y Subcategoría')
-
-# Ajusta el tamaño de la gráfica para que sea más legible
-fig_bar.update_layout(width=1200, height=600)
-
-# Muestra la gráfica en Streamlit
-st.plotly_chart(fig_bar)
+# Crea la gráfica de barras para cada categoría y subcategoría
+for category in stacks:
+    st.subheader(f'Ventas por Subcategoría en {category}')
+    fig_bar = px.bar(
+        df_sales_year_category_subcategory[df_sales_year_category_subcategory['Category'] == category],
+        x='Order Date',
+        y='Sales',
+        color='Sub-Category',
+        barmode='stack',  # Apila las barras por subcategoría
+        title=f'Ventas Acumuladas por Año y Subcategoría en {category}'
+    )
+    st.plotly_chart(fig_bar)
