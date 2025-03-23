@@ -186,7 +186,6 @@ fig_bar.update_layout(width=1200, height=600)
 # Muestra la gráfica en Streamlit
 st.plotly_chart(fig_bar)
 
-
 # Agrupa por año, categoría y subcategoría, y suma las ventas
 df_sales_year_category_subcategory = df.groupby([df['Order Date'].dt.year, 'Category', 'Sub-Category'])['Sales'].sum().reset_index()
 
