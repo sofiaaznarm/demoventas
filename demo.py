@@ -113,27 +113,20 @@ if 'Order Date' in df.columns:
 
 else:
     st.error("Error: La columna 'Order Date' no se encuentra en el archivo.")
+# ... (código anterior)
 
 # Gráfica de barras con la columna 'Category'
-if 'Category' in filtered_df.columns and 'Ventas' in filtered_df.columns:
-    st.subheader('Gráfica de Barras de Ventas por Categoría')
-    fig_bar = px.bar(filtered_df, x='Category', y='Ventas', title='Ventas por Categoría')
-    st.plotly_chart(fig_bar)
-else:
-    st.warning("Las columnas 'Category' y/o 'Ventas' no existen en el DataFrame. No se puede generar la gráfica de barras.")
-
-# ... (resto del código)
-
-# Gráfica de barras con la columna 'Category'
-if 'Category' in filtered_df.columns and 'Sales' in filtered_df.columns:
+if 'Category' in filtered_df.columns:
     st.subheader('Gráfica de Barras de Ventas por Categoría')
     fig_bar = px.bar(filtered_df, x='Category', y='Sales', title='Ventas por Categoría')
     st.plotly_chart(fig_bar)
-elif 'Category' in filtered_df.columns and 'Ventas' in filtered_df.columns:
-    st.subheader('Gráfica de Barras de Ventas por Categoría')
-    fig_bar = px.bar(filtered_df, x='Category', y='Ventas', title='Ventas por Categoría')
-    st.plotly_chart(fig_bar)
 else:
-    st.warning("Las columnas 'Category' y/o 'Sales' o 'Ventas' no existen en el DataFrame. No se puede generar la gráfica de barras.")
+    st.warning("La columna 'Category' no existe en el DataFrame. No se puede generar la gráfica de barras.")
 
-# ... (resto del código)
+# Muestra el resultado
+if not filtered_df.empty:
+    st.write(filtered_df)
+else:
+    st.write("No se encontraron resultados para los filtros seleccionados.")
+
+
