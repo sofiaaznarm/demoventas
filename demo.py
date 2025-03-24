@@ -124,3 +124,30 @@ try:
 except ValueError:
     st.error("Error: La columna 'Order Date' no tiene un formato de fecha válido.")
     st.stop()
+# Asegúrate de que las columnas 'Order Date', 'Sales' y 'Category' existan
+if 'Order Date' not in df.columns or 'Sales' not in df.columns or 'Category' not in df.columns:
+    st.error("Error: Falta una o más de las columnas 'Order Date', 'Sales' o 'Category' en el archivo.")
+    st.stop()
+
+try:
+    df['Order Date'] = pd.to_datetime(df['Order Date'])
+except ValueError:
+    st.error("Error: La columna 'Order Date' no tiene un formato de fecha válido.")
+    st.stop()
+
+# Filtra el DataFrame para las categorías deseadas
+categories_to_plot = ['Furniture', 'Office Supplies', 'Technology']
+df_filtered = df[df['Category'].isin(categories_to_plot)]
+
+# Agrupa por año y categoría, y suma las ventas
+df_sales_year_category = df_filtered.groupby([df_filtered['Order Date'].dt.year, 'Category'])['Sales'].sum().reset_index()
+
+# Crea la gráfica de líneas
+fig_line = px.line(df_sales_year_category,
+                  x='Order Date',
+                  y='Sales',
+                  color='Category',
+                  title='Ventas Acumuladas por Año y Categoría')
+
+# Muestra la gráfica en Streamlit
+st.plotly_chart(fig_line)
