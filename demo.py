@@ -225,3 +225,30 @@ for category in stacks:
         title=f'Ventas Acumuladas por Año y Subcategoría en {category}'
     )
     st.plotly_chart(fig_bar)
+
+# Lee el archivo Excel
+try:
+    df = pd.read_excel('SalidaFinalVentas.xlsx')
+except FileNotFoundError:
+    st.error("Error: El archivo 'SalidaFinalVentas.xlsx' no fue encontrado.")
+    st.stop()
+except Exception as e:
+    st.error(f"Ocurrió un error al leer el archivo: {e}")
+    st.stop()
+
+# Resto del código (manteniendo solo una instancia de cada sección)
+
+# Verifica si las columnas 'Region' y 'Ventas' existen
+if 'Region' not in df.columns:
+    st.error("Error: La columna 'Region' no se encuentra en el archivo.")
+    st.stop()
+
+if 'Ventas' not in df.columns:
+    if 'Sales' in df.columns:
+        sales_column = 'Sales'
+        st.warning("La columna 'Ventas' no fue encontrada. Usando 'Sales' en su lugar.")
+    else:
+        st.error("Error: La columna 'Ventas' (ni 'Sales') no se encuentra en el archivo. Asegúrate de que exista una columna llamada 'Ventas' o 'Sales' en tu archivo Excel.")
+        st.stop()
+else:
+    sales_column = 'Ventas'
