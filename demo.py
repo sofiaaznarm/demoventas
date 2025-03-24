@@ -374,33 +374,3 @@ else:
     st.error("Error: La columna 'Order Date' no se encuentra en el archivo.")
 
 
-# Asegúrate de que las columnas 'Order Date', 'Sales', 'Category' y 'Sub-Category' existan
-if 'Order Date' not in df.columns or 'Sales' not in df.columns or 'Category' not in df.columns or 'Sub-Category' not in df.columns:
-    st.error("Error: Falta una o más de las columnas 'Order Date', 'Sales', 'Category' o 'Sub-Category' en el archivo.")
-    st.stop()
-
-try:
-    df['Order Date'] = pd.to_datetime(df['Order Date'])
-except ValueError:
-    st.error("Error: La columna 'Order Date' no tiene un formato de fecha válido.")
-    st.stop()
-
-# Agrupa por año, categoría y subcategoría, y suma las ventas
-df_sales_year_category_subcategory = df.groupby([df['Order Date'].dt.year, 'Category', 'Sub-Category'])['Sales'].sum().reset_index()
-
-# Crea la gráfica de barras apiladas por categoría y subcategoría
-fig_bar = px.bar(
-    df_sales_year_category_subcategory,
-    x='Order Date',
-    y='Sales',
-    color='Sub-Category',
-    barmode='stack',  # Apila las barras por subcategoría
-    facet_col='Category',  # Divide la gráfica por categoría en columnas
-    title='Ventas Acumuladas por Año, Categoría y Subcategoría (Apiladas)'
-)
-
-# Ajusta el tamaño de la gráfica para que sea más legible
-fig_bar.update_layout(width=1200, height=600)
-
-# Muestra la gráfica en Streamlit
-st.plotly_chart(fig_bar)
