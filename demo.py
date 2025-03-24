@@ -374,3 +374,141 @@ else:
     st.error("Error: La columna 'Order Date' no se encuentra en el archivo.")
 
 
+# Asegúrate de que la columna 'Order Date' exista y sea de tipo fecha
+if 'Order Date' in df.columns:
+    try:
+        df['Order Date'] = pd.to_datetime(df['Order Date'])
+    except ValueError:
+        st.error("Error: La columna 'Order Date' no tiene un formato de fecha válido.")
+        st.stop()
+
+    # Agrupa por año y suma las ventas
+    df_sales_year = df.groupby(df['Order Date'].dt.year)['Sales'].sum().reset_index()
+
+    # Crea la gráfica de línea
+    fig_line = px.line(df_sales_year, x='Order Date', y='Sales', title='Acumulado de Ventas por Año')
+
+    # Muestra la gráfica en Streamlit
+    st.plotly_chart(fig_line)
+
+else:
+    st.error("Error: La columna 'Order Date' no se encuentra en el archivo.")
+
+
+
+# ... (código anterior)
+
+# Asegúrate de que las columnas 'Order Date', 'Sales' y 'Category' existan
+if 'Order Date' not in df.columns or 'Sales' not in df.columns or 'Category' not in df.columns:
+    st.error("Error: Falta una o más de las columnas 'Order Date', 'Sales' o 'Category' en el archivo.")
+    st.stop()
+
+try:
+    df['Order Date'] = pd.to_datetime(df['Order Date'])
+except ValueError:
+    st.error("Error: La columna 'Order Date' no tiene un formato de fecha válido.")
+    st.stop()
+
+# Agrupa por año y categoría, y suma las ventas
+df_sales_year_category = df.groupby([df['Order Date'].dt.year, 'Category'])['Sales'].sum().reset_index()
+
+# Crea la gráfica de barras
+fig_bar = px.bar(df_sales_year_category, x='Order Date', y='Sales', color='Category',
+                 title='Ventas Acumuladas por Año y Categoría')
+
+# Muestra la gráfica en Streamlit
+st.plotly_chart(fig_bar)
+
+
+# ... (código anterior)
+
+# Lee el archivo Excel
+try:
+    df = pd.read_excel('SalidaFinalVentas.xlsx')
+except FileNotFoundError:
+    st.error("Error: El archivo 'SalidaFinalVentas.xlsx' no fue encontrado.")
+    st.stop()
+except Exception as e:
+    st.error(f"Ocurrió un error al leer el archivo: {e}")
+    st.stop()
+
+# Resto del código (manteniendo solo una instancia de cada sección)
+
+# Verifica si las columnas 'Region' y 'Ventas' existen
+if 'Region' not in df.columns:
+    st.error("Error: La columna 'Region' no se encuentra en el archivo.")
+    st.stop()
+
+if 'Ventas' not in df.columns:
+    if 'Sales' in df.columns:
+        sales_column = 'Sales'
+        st.warning("La columna 'Ventas' no fue encontrada. Usando 'Sales' en su lugar.")
+    else:
+        st.error("Error: La columna 'Ventas' (ni 'Sales') no se encuentra en el archivo. Asegúrate de que exista una columna llamada 'Ventas' o 'Sales' en tu archivo Excel.")
+        st.stop()
+else:
+    sales_column = 'Ventas'
+
+# Crea la gráfica de barras
+fig = px.bar(df, x='Region', y=sales_column, title='Ventas por Región')
+st.plotly_chart(fig)
+
+# Muestra el DataFrame en Streamlit (opcional)
+st.write(df)
+
+
+# Filtro para la columna 'Region'
+if 'Region' in df.columns:
+    selected_regions = st.multiselect('Selecciona Regiones', df['Region'].unique())
+    if selected_regions:
+        filtered_df = df[df['Region'].isin(selected_regions)]
+    else:
+        filtered_df = df
+else:
+    st.warning("La columna 'Region' no existe en el DataFrame. No se puede aplicar el filtro de región.")
+    filtered_df = df
+
+# Filtro para la columna 'State' basado en el filtro de 'Region'
+if 'State' in filtered_df.columns:
+    selected_states = st.multiselect('Selecciona Estados', filtered_df['State'].unique())
+    if selected_states:
+        filtered_df = filtered_df[filtered_df['State'].isin(selected_states)]
+else:
+    st.warning("La columna 'State' no existe en el DataFrame. No se puede aplicar el filtro de estado.")
+
+# Gráfica de pastel con la columna 'Category'
+if 'Category' in filtered_df.columns:
+    st.subheader('Gráfica de Pastel de Categorías')
+    category_counts = filtered_df['Category'].value_counts()
+    fig_pie = px.pie(category_counts, values=category_counts.values, names=category_counts.index, title='Distribución de Categorías')
+    st.plotly_chart(fig_pie)
+else:
+    st.warning("La columna 'Category' no existe en el DataFrame. No se puede generar la gráfica de pastel.")
+
+# Muestra el resultado
+if not filtered_df.empty:
+    st.write(filtered_df)
+else:
+    st.write("No se encontraron resultados para los filtros seleccionados.")
+
+
+# Asegúrate de que la columna 'Order Date' exista y sea de tipo fecha
+if 'Order Date' in df.columns:
+    try:
+        df['Order Date'] = pd.to_datetime(df['Order Date'])
+    except ValueError:
+        st.error("Error: La columna 'Order Date' no tiene un formato de fecha válido.")
+        st.stop()
+
+    # Agrupa por año y suma las ventas
+    df_sales_year = df.groupby(df['Order Date'].dt.year)['Sales'].sum().reset_index()
+
+    # Crea la gráfica de línea
+    fig_line = px.line(df_sales_year, x='Order Date', y='Sales', title='Acumulado de Ventas por Año')
+
+    # Muestra la gráfica en Streamlit
+    st.plotly_chart(fig_line)
+
+else:
+    st.error("Error: La columna 'Order Date' no se encuentra en el archivo.")
+
