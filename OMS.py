@@ -42,17 +42,27 @@ else:
     # Muestra la gráfica en Streamlit
     st.plotly_chart(fig)
 
+import pandas as pd
+import streamlit as st
+import plotly.express as px
 
-# Segunda gráfica (opcional, pero mantenida para consistencia)
-# Si necesitas una segunda gráfica con diferentes filtros, repite el proceso arriba
-# con los filtros adecuados
-filtered_df_2 = df[(df['Indicator'] == 'Life expectancy at birth') &
-                 (df['Dim1'].isin(['Female', 'Male', 'Total']))]
+# Lee el archivo CSV
+df = pd.read_csv('RELAY_WHS.csv')
 
-if not filtered_df_2.empty:
-    fig2 = px.line(filtered_df_2,
-                  x='Year',
-                  y='Value',
-                  color='Dim1',
-                  title='Life expectancy at birth')
-    st.plotly_chart(fig2)
+# Filtra el DataFrame para obtener solo las columnas deseadas
+filtered_df = df[['DIM_TAME', 'IND_NAME', 'DIM_SEX', 'AMOUNT_N']]
+
+# Agrupa por DIM_TAME, IND_NAME y DIM_SEX, sumando AMOUNT_N
+grouped_df = filtered_df.groupby(['DIM_TAME', 'IND_NAME', 'DIM_SEX'])['AMOUNT_N'].sum().reset_index()
+
+# Crea una gráfica de líneas para FEMALE, MALE y TOTAL
+fig = px.line(grouped_df, 
+              x='DIM_TAME', 
+              y='AMOUNT_N', 
+              color='DIM_SEX', 
+              title='AMOUNT_N by DIM_SEX over DIM_TAME',
+              labels={'DIM_TAME': 'DIM_TAME', 'AMOUNT_N': 'AMOUNT_N', 'DIM_SEX': 'Sex'},
+              markers=True)
+
+# Muestra la gráfica en Streamlit
+st.plotly_chart(fig)
