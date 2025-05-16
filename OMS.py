@@ -1,7 +1,3 @@
-# prompt: Instalar streamlit si no está instalado
-
-!pip install -q streamlitimport pandas as pd
-
 # Lee el archivo CSV
 df = pd.read_csv('RELAY_WHS.csv')
 
