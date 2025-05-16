@@ -1,3 +1,4 @@
+!pip install -q streamlit
 import pandas as pd
 
 # Lee el archivo CSV
@@ -8,61 +9,36 @@ print(df.head())
 import streamlit as st
 
 st.write(df)
-import pandas as pd
-import streamlit as st
-import plotly.express as px
-
-# Lee el archivo CSV una sola vez
-df = pd.read_csv('RELAY_WHS.csv')
-
-# Muestra las primeras filas del DataFrame para verificar (opcional)
-# print(df.head())
-
-#st.write(df)  # Esto podría ser la causa de error si el DataFrame es muy grande
-
-
-# Filtra el DataFrame para obtener solo las columnas deseadas y el indicador
-# Asegúrate de que 'Healthy life expectancy at birth', 'Year', 'Value', y 'Dim1'
-# existan como columnas en tu DataFrame. Si no, corrige los nombres a continuación.
-filtered_df = df[(df['Indicator'] == 'Healthy life expectancy at birth') &
-                 (df['Dim1'].isin(['Female', 'Male', 'Total']))]
-
-
-# Manejo de errores si no se encuentran datos para la gráfica
-if filtered_df.empty:
-    st.write("No data found for 'Healthy life expectancy at birth' and specified Dim1 values.")
-else:
-    # Crea la gráfica de líneas
-    fig = px.line(filtered_df,
-                  x='Year',
-                  y='Value',
-                  color='Dim1',
-                  title='Healthy Life Expectancy at Birth')
-
-    # Muestra la gráfica en Streamlit
-    st.plotly_chart(fig)
 
 import pandas as pd
-import streamlit as st
-import plotly.express as px
+import altair as alt
 
-# Lee el archivo CSV
-df = pd.read_csv('RELAY_WHS.csv')
+# Limpiar y convertir la columna DIM_TIME a formato de fecha si es necesario
+# Asegúrate de que 'DIM_TIME' esté en un formato que Altair pueda entender, como datetime
+# Por ejemplo, si 'DIM_TIME' es 'YYYYMMDD', puedes convertirlo así:
+# df['DIM_TIME'] = pd.to_datetime(df['DIM_TIME'], format='%Y%m%d')
 
-# Filtra el DataFrame para obtener solo las columnas deseadas
-filtered_df = df[['DIM_TAME', 'IND_NAME', 'DIM_SEX', 'AMOUNT_N']]
+# Asegúrate de que 'DIM_TIME' ya esté en un formato compatible con Altair,
+# o realiza la conversión necesaria. Si es un timestamp, Altair lo manejará bien.
 
-# Agrupa por DIM_TAME, IND_NAME y DIM_SEX, sumando AMOUNT_N
-grouped_df = filtered_df.groupby(['DIM_TAME', 'IND_NAME', 'DIM_SEX'])['AMOUNT_N'].sum().reset_index()
+# Agrupar por tiempo y sexo, y sumar la cantidad
+df_grouped = df.groupby(['DIM_TIME', 'DIM_SEX'])['AMOUNT_N'].sum().reset_index()
 
-# Crea una gráfica de líneas para FEMALE, MALE y TOTAL
-fig = px.line(grouped_df, 
-              x='DIM_TAME', 
-              y='AMOUNT_N', 
-              color='DIM_SEX', 
-              title='AMOUNT_N by DIM_SEX over DIM_TAME',
-              labels={'DIM_TAME': 'DIM_TAME', 'AMOUNT_N': 'AMOUNT_N', 'DIM_SEX': 'Sex'},
-              markers=True)
+# Calcular el total agrupando solo por tiempo
+df_total = df.groupby('DIM_TIME')['AMOUNT_N'].sum().reset_index()
+df_total['DIM_SEX'] = 'TOTAL' # Añadir una columna para identificar la línea total
 
-# Muestra la gráfica en Streamlit
-st.plotly_chart(fig)
+# Combinar los dataframes agrupados y el total
+df_combined = pd.concat([df_grouped, df_total])
+
+# Crear la gráfica de líneas usando Altair
+chart = alt.Chart(df_combined).mark_line().encode(
+    x='DIM_TIME:T', # 'T' indica que es un campo temporal
+    y='AMOUNT_N:Q', # 'Q' indica que es un campo cuantitativo
+    color='DIM_SEX:N' # 'N' indica que es un campo nominal (categórico)
+).properties(
+    title='AMOUNT_N Over Time by Sex and Total'
+).interactive() # Permite hacer zoom y pan en la gráfica
+
+# Mostrar la gráfica en Streamlit
+st.altair_chart(chart, use_container_width=True)
