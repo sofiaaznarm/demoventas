@@ -1,13 +1,40 @@
 import pandas as pd
+import streamlit as st
 import altair as alt
 
-# Limpiar y convertir la columna DIM_TIME a formato de fecha si es necesario
-# Asegúrate de que 'DIM_TIME' esté en un formato que Altair pueda entender, como datetime
-# Por ejemplo, si 'DIM_TIME' es 'YYYYMMDD', puedes convertirlo así:
-# df['DIM_TIME'] = pd.to_datetime(df['DIM_TIME'], format='%Y%m%d')
+# El código para instalar streamlit (!pip install -q streamlit)
+# no debe estar dentro del script de Streamlit.
+# Debes ejecutarlo una vez en tu entorno antes de ejecutar el script de Streamlit.
+# Por lo tanto, eliminamos la línea !pip install.
 
-# Asegúrate de que 'DIM_TIME' ya esté en un formato compatible con Altair,
-# o realiza la conversión necesaria. Si es un timestamp, Altair lo manejará bien.
+# Lee el archivo CSV
+try:
+    df = pd.read_csv('RELAY_WHS.csv')
+except FileNotFoundError:
+    st.error("Error: El archivo RELAY_WHS.csv no fue encontrado.")
+    st.stop() # Detiene la ejecución si el archivo no se encuentra
+
+# Muestra las primeras filas del DataFrame para verificar (opcional en Streamlit)
+# st.write("Primeras filas del DataFrame:")
+# st.dataframe(df.head())
+
+st.title('Análisis de AMOUNT_N por Tiempo y Sexo')
+
+st.write("Datos brutos:")
+st.dataframe(df)
+
+# Limpiar y convertir la columna DIM_TIME a formato de fecha
+# Es crucial para que Altair pueda graficar correctamente series temporales.
+# Asumiendo que DIM_TIME es un timestamp numérico, lo convertimos.
+# Si el formato es diferente (por ejemplo, 'YYYYMMDD'), ajusta el código
+# de pd.to_datetime con el formato correcto.
+try:
+    df['DIM_TIME'] = pd.to_datetime(df['DIM_TIME'], unit='ms')
+    # Si el formato es 'YYYYMMDD', usa:
+    # df['DIM_TIME'] = pd.to_datetime(df['DIM_TIME'], format='%Y%m%d')
+except Exception as e:
+    st.error(f"Error al convertir la columna DIM_TIME a formato de fecha: {e}")
+    st.stop()
 
 # Agrupar por tiempo y sexo, y sumar la cantidad
 df_grouped = df.groupby(['DIM_TIME', 'DIM_SEX'])['AMOUNT_N'].sum().reset_index()
@@ -21,12 +48,15 @@ df_combined = pd.concat([df_grouped, df_total])
 
 # Crear la gráfica de líneas usando Altair
 chart = alt.Chart(df_combined).mark_line().encode(
-    x='DIM_TIME:T', # 'T' indica que es un campo temporal
-    y='AMOUNT_N:Q', # 'Q' indica que es un campo cuantitativo
-    color='DIM_SEX:N' # 'N' indica que es un campo nominal (categórico)
+    x=alt.X('DIM_TIME:T', title='Tiempo'), # 'T' indica que es un campo temporal
+    y=alt.Y('AMOUNT_N:Q', title='Cantidad'), # 'Q' indica que es un campo cuantitativo
+    color=alt.Color('DIM_SEX:N', title='Sexo') # 'N' indica que es un campo nominal (categórico)
 ).properties(
-    title='AMOUNT_N Over Time by Sex and Total'
+    title='Cantidad Over Time por Sexo y Total'
 ).interactive() # Permite hacer zoom y pan en la gráfica
 
 # Mostrar la gráfica en Streamlit
 st.altair_chart(chart, use_container_width=True)
+
+st.write("Tabla de datos agrupados y totales utilizados para la gráfica:")
+st.dataframe(df_combined)
