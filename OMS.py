@@ -46,19 +46,16 @@ df_total['DIM_SEX'] = 'TOTAL' # Añadir una columna para identificar la línea t
 
 # Combinar los dataframes agrupados y el total
 df_combined = pd.concat([df_grouped, df_total])
-
 # Crear la gráfica de líneas usando Altair
-# Usamos facet para separar las gráficas por DIM_TIME_TYPE
-chart = alt.Chart(df_combined).mark_line().encode(
-    x=alt.X('DIM_TIME:T', title='Tiempo'), # 'T' indica que es un campo temporal
-    y=alt.Y('AMOUNT_N:Q', title='Cantidad'), # 'Q' indica que es un campo cuantitativo
-    color=alt.Color('DIM_SEX:N', title='Sexo'), # 'N' indica que es un campo nominal (categórico)
-    facet=alt.Facet('DIM_TIME_TYPE:N', columns=2, title='Tipo de Tiempo') # Facet por tipo de tiempo
+chart = alt.Chart(df).mark_point().encode(
+    x=alt.X('DIM_TIME:T', title='DIM_TIME'),
+    y=alt.Y('DIM_GEO_CODE_M49:N', title='DIM_GEO_CODE_M49'),
+    size=alt.Size('AMOUNT_N:Q', title='Cantidad'), # Usa el tamaño para representar la cantidad
+    color=alt.Color('DIM_SEX:N', title='Sexo'),
+    tooltip=['DIM_TIME:T', 'DIM_GEO_CODE_M49:N', 'AMOUNT_N:Q', 'DIM_SEX:N']
 ).properties(
-    title='Cantidad Over Time por Sexo y Tipo de Tiempo'
+    title='AMOUNT_N por DIM_GEO_CODE_M49 y DIM_TIME'
 ).interactive() # Permite hacer zoom y pan en la gráfica
+
 # Mostrar la gráfica en Streamlit
 st.altair_chart(chart, use_container_width=True)
-
-st.write("Tabla de datos agrupados y totales utilizados para la gráfica:")
-st.dataframe(df_combined)
