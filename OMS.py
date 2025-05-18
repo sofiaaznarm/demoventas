@@ -35,7 +35,6 @@ try:
 except Exception as e:
     st.error(f"Error al convertir la columna DIM_TIME a formato de fecha: {e}")
     st.stop()
-  import pandas as pd
 # Agrupar por tiempo, tipo de tiempo y sexo, y sumar la cantidad
 df_grouped = df.groupby(['DIM_TIME', 'DIM_TIME_TYPE', 'DIM_SEX'])['AMOUNT_N'].sum().reset_index()
 
