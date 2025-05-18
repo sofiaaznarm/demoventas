@@ -46,14 +46,13 @@ df_total['DIM_SEX'] = 'TOTAL' # Añadir una columna para identificar la línea t
 df_combined = pd.concat([df_grouped, df_total])
 
 # Crear la gráfica de líneas usando Altair
-# Usamos facet para separar las gráficas por DIM_TIME_TYPE
 chart = alt.Chart(df_combined).mark_line().encode(
-    x=alt.X('DIM_TIME:T', title='Tiempo'), # 'T' indica que es un campo temporal
-    y=alt.Y('AMOUNT_N:Q', title='Cantidad'), # 'Q' indica que es un campo cuantitativo
+    x=alt.X('DIM_TIME:T', title='DIM_TIME'), # 'T' indica que es un campo temporal
+    y=alt.Y('AMOUNT_N:Q', title='AMOUNT_N'), # 'Q' indica que es un campo cuantitativo
     color=alt.Color('DIM_SEX:N', title='Sexo'), # 'N' indica que es un campo nominal (categórico)
     facet=alt.Facet('DIM_TIME_TYPE:N', columns=2, title='Tipo de Tiempo') # Facet por tipo de tiempo
 ).properties(
-    title='Cantidad Over Time por Sexo y Tipo de Tiempo'
+    title='AMOUNT_N Over Time por Sexo y Tipo de Tiempo'
 ).interactive() # Permite hacer zoom y pan en la gráfica
 
 # Mostrar la gráfica en Streamlit
