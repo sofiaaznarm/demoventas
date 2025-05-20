@@ -6,6 +6,32 @@ import altair as alt
 # no debe estar dentro del script de Streamlit.
 # Debes ejecutarlo una vez en tu entorno antes de ejecutar el script de Streamlit.
 # Por lo tanto, eliminamos la línea !pip install.
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+# Assumes 'OMS.csv' is accessible in the Streamlit environment
+df_oms = pd.read_csv('OMS.csv')
+
+df_mexico = df_oms[df_oms['GEO_NAME_SHORT'] == 'Mexico']
+
+# Create the area chart faceted by sex
+fig1 = px.area(df_mexico, x="DIM_TIME", y="AMOUNT_N", facet_col="DIM_SEX",
+               title='Amount Over Time for Mexico (Faceted by Sex)')
+
+# Display the first chart in Streamlit
+st.plotly_chart(fig1, use_container_width=True)
+
+# Create the area chart with sex as color
+fig2 = px.area(df_mexico, x="DIM_TIME", y="AMOUNT_N", color="DIM_SEX",
+               title='Amount Over Time for Mexico (Color by Sex)')
+
+# Display the second chart in Streamlit
+st.plotly_chart(fig2, use_container_width=True)
+
+
+
+
 
 # Lee el archivo CSV
 try:
