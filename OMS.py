@@ -11,7 +11,7 @@ import pandas as pd
 import plotly.express as px
 
 # Assumes 'OMS.csv' is accessible in the Streamlit environment
-df_oms = pd.read_csv('OMS.csv')
+df_oms = pd.read_csv('RELAY_WHS.csv')
 
 df_mexico = df_oms[df_oms['GEO_NAME_SHORT'] == 'Mexico']
 
