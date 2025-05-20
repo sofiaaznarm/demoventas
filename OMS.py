@@ -24,7 +24,7 @@ st.plotly_chart(fig1, use_container_width=True)
 
 # Create the area chart with sex as color
 fig2 = px.area(df_mexico, x="DIM_TIME", y="AMOUNT_N", color="DIM_SEX",
-               title='Amount Over Time for Mexico (Color by Sex)')
+               title='Amount Over Time para Mexico (Color by Sex)')
 
 # Display the second chart in Streamlit
 st.plotly_chart(fig2, use_container_width=True)
