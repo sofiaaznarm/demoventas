@@ -115,3 +115,49 @@ fig.update_traces(marker_color=['#002855'] + ['#4ba3c3'] * (len(causas) - 1))
 
 # Mostrar la gráfica en Streamlit
 st.plotly_chart(fig)
+
+Crea un repositorio en GitHub y añade un archivo llamado app.py con este contenido:
+
+Python
+
+Collapse
+import streamlit as st
+import plotly.express as px
+import pandas as pd
+
+# Datos de las causas de muerte
+causes_of_death = {
+    'COVID-19': 334.2,
+    'Ischaemic heart disease': 130.3,
+    'Diabetes mellitus': 73.4,
+    'Interpersonal violence': 51.4,
+    'Cirrhosis of the liver': 33.6,
+    'Kidney diseases': 30.6,
+    'Stroke': 24.6,
+    'Road injury': 19.9,
+    'Lower respiratory infections': 18.1,
+    'Chronic obstructive pulmonary disease': 14.9
+}
+
+# Convertir a DataFrame
+df = pd.DataFrame(list(causes_of_death.items()), columns=['Cause', 'Deaths_per_100k'])
+
+# Ordenar los datos
+df = df.sort_values(by='Deaths_per_100k', ascending=True)
+
+# Crear la gráfica de barras horizontal con Plotly
+fig = px.bar(df, 
+             x='Deaths_per_100k', 
+             y='Cause', 
+             orientation='h', 
+             title='Principales causas de muerte - Masculino\nMuertes por 100 000 población, México, 2021',
+             text='Deaths_per_100k')
+
+# Personalizar diseño
+fig.update_layout(
+    xaxis_title='Muertes por 100,000 habitantes',
+    yaxis_title='Causa de Muerte'
+)
+
+# Mostrar gráfica en Streamlit
+st.plotly_chart(fig)
