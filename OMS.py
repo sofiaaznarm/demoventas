@@ -116,13 +116,5 @@ ax.invert_yaxis() # COVID-19 arriba
 ax.set_xlabel('Muertes por cada 100,000 mujeres')
 ax.set_title('Top causes of death - Female')
 
-# Etiquetas al final de cada barra
-for barra in barras:
-ax.text(barra.get_width() + 1, barra.get_y() + barra.get_height()/2,
-f'{barra.get_width():.1f}', va='center', fontsize=9)
-
-ax.grid(axis='x', linestyle='--', alpha=0.5)
-fig.tight_layout()
-
 # Mostrar la gráfica en Streamlit
 st.pyplot(fig)
