@@ -148,14 +148,14 @@ fig = px.bar(df,
              title='Principales causas de muerte - Masculino\nMuertes por 100 000 población, México, 2021',
              text='Deaths_per_100k')
 
+# Personalizar colores
+fig.update_traces(marker_color=['#002855'] + ['#4ba3c3'] * (len(df) - 1))
+
 # Personalizar diseño
 fig.update_layout(
     xaxis_title='Muertes por 100,000 habitantes',
     yaxis_title='Causa de Muerte'
 )
-
-# Personalizar colores
-fig.update_traces(marker_color=['#002855'] + ['#4ba3c3'] * (len(causas) - 1))
 
 # Mostrar gráfica en Streamlit
 st.plotly_chart(fig)
