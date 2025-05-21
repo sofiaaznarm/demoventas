@@ -154,5 +154,8 @@ fig.update_layout(
     yaxis_title='Causa de Muerte'
 )
 
+# Personalizar colores
+fig.update_traces(marker_color=['#002855'] + ['#4ba3c3'] * (len(causas) - 1))
+
 # Mostrar gráfica en Streamlit
 st.plotly_chart(fig)
