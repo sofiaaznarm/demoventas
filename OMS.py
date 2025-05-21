@@ -87,31 +87,31 @@ st.altair_chart(chart, use_container_width=True)
 st.write("Tabla de datos agrupados y totales utilizados para la gráfica:")
 st.dataframe(df_combined)
 
-st.subheader("Principales causas de muerte - Mujeres (México, 2021)")
+import streamlit as st
+import plotly.express as px
+import pandas as pd
 
 # Datos completos
 causas = ['COVID-19', 'Ischaemic heart disease', 'Diabetes mellitus',
-'Kidney diseases', 'Stroke', 'Lower respiratory infections',
-'Hypertensive heart disease', 'Breast cancer','Chronic obstructive pulmonary disease', 'Cirrhosis of the liver']
+          'Kidney diseases', 'Stroke', 'Lower respiratory infections',
+          'Hypertensive heart disease', 'Breast cancer',
+          'Chronic obstructive pulmonary disease', 'Cirrhosis of the liver']
+
 tasas = [205.8, 95.2, 69.2, 26.4, 22.2, 14, 12.8, 12.2, 11.9, 9.5]
 
-# Colores personalizados (COVID-19 más oscuro, el resto en azul claro)
-colores = ['#002855'] + ['#4ba3c3'] * (len(causas) - 1)
+# Crear DataFrame
+df = pd.DataFrame({'Causa': causas, 'Tasa': tasas})
 
-# Crear la gráfica
-fig, ax = plt.subplots(figsize=(10, 7))
-barras = ax.barh(causas, tasas, color=colores)
-ax.set_xlabel('Muertes por cada 100,000 mujeres')
-ax.set_title('Principales causas de muerte - Mujeres (México, 2021)', fontsize=14)
-ax.invert_yaxis()
-ax.grid(axis='x', linestyle='--', alpha=0.5)
+# Crear la gráfica de barras horizontal con Plotly
+fig = px.bar(df, 
+             x='Tasa', 
+             y='Causa', 
+             orientation='h',
+             title='Principales causas de muerte - Mujeres (México, 2021)',
+             text='Tasa')
 
-# Agregar valores al final de cada barra
-for barra in barras:
-ax.text(barra.get_width() + 1, barra.get_y() + barra.get_height()/2,
-f'{barra.get_width():.1f}', va='center', fontsize=9)
-
-plt.tight_layout()
+# Personalizar colores
+fig.update_traces(marker_color=['#002855'] + ['#4ba3c3'] * (len(causas) - 1))
 
 # Mostrar la gráfica en Streamlit
-st.pyplot(fig)
+st.plotly_chart(fig)
