@@ -116,11 +116,6 @@ fig.update_traces(marker_color=['#002855'] + ['#4ba3c3'] * (len(causas) - 1))
 # Mostrar la gráfica en Streamlit
 st.plotly_chart(fig)
 
-Crea un repositorio en GitHub y añade un archivo llamado app.py con este contenido:
-
-Python
-
-Collapse
 import streamlit as st
 import plotly.express as px
 import pandas as pd
