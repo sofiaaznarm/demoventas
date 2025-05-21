@@ -92,8 +92,7 @@ st.subheader("Principales causas de muerte - Mujeres (México, 2021)")
 # Datos completos
 causas = ['COVID-19', 'Ischaemic heart disease', 'Diabetes mellitus',
 'Kidney diseases', 'Stroke', 'Lower respiratory infections',
-'Hypertensive heart disease', 'Breast cancer',
-'Chronic obstructive pulmonary disease', 'Cirrhosis of the liver']
+'Hypertensive heart disease', 'Breast cancer','Chronic obstructive pulmonary disease', 'Cirrhosis of the liver']
 
 tasas = [205.8, 95.2, 69.2, 26.4, 22.2, 14, 12.8, 12.2, 11.9, 9.5]
 
