@@ -87,6 +87,11 @@ st.altair_chart(chart, use_container_width=True)
 st.write("Tabla de datos agrupados y totales utilizados para la gráfica:")
 st.dataframe(df_combined)
 
+import pandas as pd
+# **Luego analizamos el archivo de las causas de muerte en el sector femenino de México**
+df_femenino = pd.read_csv('FEMENINO.csv')
+df_femenino
+
 import streamlit as st
 import matplotlib.pyplot as plt
 
